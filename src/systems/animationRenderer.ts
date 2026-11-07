@@ -14,11 +14,10 @@ import { VanillaItemDisplay } from '../outliner/vanillaItemDisplay'
 import { sanitizeStorageKey } from '../util/minecraftUtil'
 import { scrubUndefined } from '../util/misc'
 import { MSLimiter } from '../util/msLimiter'
+import { getKeyframeRepeatSchedule, TICK_RATE } from './repeatSchedule'
 import type { AnyRenderedNode, IRenderedRig } from './rigRenderer'
 
 const RAD_TO_DEG = 180 / Math.PI
-/** Ticks (frames) per second. Animations are sampled once per Minecraft tick. */
-const TICK_RATE = 20
 /** Applied to {@link TextDisplay} matrices so text faces the same way it does in-game. */
 const TEXT_DISPLAY_ROTATION_MATRIX = new THREE.Matrix4().makeRotationFromEuler(
 	new THREE.Euler(0, Math.PI, 0, 'XYZ')
@@ -154,7 +153,16 @@ export interface IRenderedAnimation {
 interface LastFrameCacheItem {
 	/** Flat 16-element matrix of the last emitted frame, for exact change detection. */
 	matrix: number[]
-	keyframe?: _Keyframe
+}
+
+/** Tick -> the function keyframe running on it, from each keyframe's repeat schedule. */
+function indexFunctionRuns(keyframes: _Keyframe[]) {
+	const runs = new Map<number, _Keyframe>()
+	for (const kf of keyframes) {
+		if (kf.channel !== 'function') continue
+		for (const tick of getKeyframeRepeatSchedule(kf).ticks) runs.set(tick, kf)
+	}
+	return runs
 }
 
 /**
@@ -178,7 +186,10 @@ export class AnimationSampler {
 	private readonly parentChains = new Map<string, string[]>()
 	private readonly variantKeyframesByTick = new Map<number, _Keyframe>()
 	private readonly textureSlotKeyframesByTick = new Map<number, _Keyframe>()
-	private readonly functionKeyframesByTick = new Map<number, _Keyframe>()
+	/** Tick -> the effects function keyframe running on it, repeats included. */
+	private readonly functionRunsByTick: Map<number, _Keyframe>
+	/** Locator/interaction UUID -> (tick -> the function keyframe running on it). */
+	private readonly functionRunsByNode = new Map<string, Map<number, _Keyframe>>()
 	private readonly lastFrameCache = new Map<string, LastFrameCacheItem>()
 
 	/**
@@ -240,6 +251,13 @@ export class AnimationSampler {
 				}
 			}
 			this.keyframesByNode.set(uuid, byTick)
+			const type = nodeMap[uuid]?.type
+			if (animator?.keyframes && (type === 'locator' || type === 'interaction')) {
+				this.functionRunsByNode.set(
+					uuid,
+					indexFunctionRuns(animator.keyframes as _Keyframe[])
+				)
+			}
 
 			const chain: string[] = []
 			let parent = nodeMap[uuid]?.parent
@@ -257,9 +275,9 @@ export class AnimationSampler {
 		for (const kf of (effects?.texture_slot as _Keyframe[] | undefined) ?? []) {
 			this.textureSlotKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
 		}
-		for (const kf of (effects?.function as _Keyframe[] | undefined) ?? []) {
-			this.functionKeyframesByTick.set(Math.round(kf.time * TICK_RATE), kf)
-		}
+		this.functionRunsByTick = indexFunctionRuns(
+			(effects?.function as _Keyframe[] | undefined) ?? []
+		)
 
 		this.dynamicEntries = this.nodeEntries.filter(([uuid, node]) =>
 			this.isDynamicEntry(uuid, node)
@@ -368,7 +386,7 @@ export class AnimationSampler {
 	private getFunctionFrame(
 		tick: number
 	): Pick<IRenderedFrame, 'function' | 'function_execute_condition'> {
-		const kf = this.functionKeyframesByTick.get(tick)
+		const kf = this.functionRunsByTick.get(tick)
 		if (!kf) return {}
 		return scrubUndefined({
 			function: kf.function?.trim(),
@@ -391,15 +409,13 @@ export class AnimationSampler {
 	}
 
 	/** Record the last emitted matrix for a node, reusing the cached buffer. */
-	private storeLastFrame(uuid: string, elements: ArrayLike<number>, keyframe?: _Keyframe) {
+	private storeLastFrame(uuid: string, elements: ArrayLike<number>) {
 		const existing = this.lastFrameCache.get(uuid)
 		if (existing) {
 			for (let i = 0; i < 16; i++) existing.matrix[i] = elements[i]
-			existing.keyframe = keyframe
 		} else {
 			this.lastFrameCache.set(uuid, {
 				matrix: Array.prototype.slice.call(elements),
-				keyframe,
 			})
 		}
 	}
@@ -466,23 +482,16 @@ export class AnimationSampler {
 						interpolation = 'pre-post'
 						matrix = this.prePostMatrices.get(uuid) ?? matrix
 					}
-					this.storeLastFrame(uuid, matrix.elements, keyframe)
+					this.storeLastFrame(uuid, matrix.elements)
 					break
 				}
 				case 'interaction':
 				case 'locator': {
 					matrix = getNodeMatrix(outlinerNode, 1, this.matrixScratch)
-					if (keyframe) {
-						fn = keyframe.function
-						fnCondition = keyframe.execute_condition
-						this.storeLastFrame(uuid, matrix.elements, keyframe)
-					} else if (lastFrame?.keyframe) {
-						const repeat = lastFrame.keyframe.repeat
-						const frequency = lastFrame.keyframe.repeat_frequency
-						if (repeat && frequency && Math.round(time * TICK_RATE) % frequency === 0) {
-							fn = lastFrame.keyframe.function
-							fnCondition = lastFrame.keyframe.execute_condition
-						}
+					const run = this.functionRunsByNode.get(uuid)?.get(tick)
+					if (run) {
+						fn = run.function
+						fnCondition = run.execute_condition
 					}
 					break
 				}
@@ -493,7 +502,7 @@ export class AnimationSampler {
 					// Only emit the frame if the matrix changed, or this is the first frame.
 					if (lastFrame && matrixElementsEqual(lastFrame.matrix, matrix.elements))
 						continue
-					this.storeLastFrame(uuid, matrix.elements, keyframe)
+					this.storeLastFrame(uuid, matrix.elements)
 					break
 				}
 				default:

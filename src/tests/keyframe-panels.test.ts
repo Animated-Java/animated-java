@@ -88,6 +88,30 @@ describe('Keyframe panels', () => {
 			)
 			const repeatToggle = await record(() => repeatInput.click())
 
+			// Duration: one step per focus, and the run summary follows it.
+			const durationInput = await waitFor(() =>
+				panel().querySelector<HTMLInputElement>('#repeat_duration_input')
+			)
+			const durationPlaceholder = durationInput.value === '' && durationInput.placeholder
+			const durationEdit = await record(() => {
+				durationInput.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+				durationInput.value = '10'
+				durationInput.dispatchEvent(new Event('input', { bubbles: true }))
+				durationInput.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
+			})
+			const duration = fkf.repeat_duration
+			const text = (selector: string) => panel().querySelector(selector)?.textContent?.trim()
+			// At tick 20 of a 20-tick animation, so 10 ticks runs past the end.
+			const overrun = text('#repeat_overrun_warning')
+
+			// A keyframe 5 ticks in cuts the 10-tick, every-tick repeat short.
+			Undo.initEdit({ animations: [anim], keyframes: [] })
+			fx.addKeyframe({ channel: 'function', time: 1.25, data_points: [{}] })
+			anim.length = 2
+			Undo.finishEdit('Add keyframe')
+			const cutoff = await waitFor(() => text('#repeat_cutoff_warning'))
+			const runs = text('#repeat_runs')
+
 			// Focusing a typed field without changing it records nothing.
 			const pre = panel().querySelector<HTMLElement>('.custom-bar pre')!
 			const focusOnly = await record(() => {
@@ -111,6 +135,12 @@ describe('Keyframe panels', () => {
 				slotsAfterRemove,
 				repeatToggle,
 				repeat: fkf.repeat,
+				durationPlaceholder,
+				durationEdit,
+				duration,
+				overrun,
+				cutoff,
+				runs,
 				focusOnly,
 				typed,
 			}

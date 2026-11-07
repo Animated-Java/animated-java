@@ -15,6 +15,8 @@ declare global {
 		execute_condition?: string
 		repeat?: boolean
 		repeat_frequency?: number
+		/** Ticks to keep repeating. `0` repeats until the next keyframe or the animation end. */
+		repeat_duration?: number
 	}
 }
 
@@ -34,6 +36,7 @@ export enum KEYFRAME_DATA_POINTS {
 	EXECUTE_CONDITION = 'execute_condition',
 	REPEAT = 'repeat',
 	REPEAT_FREQUENCY = 'repeat_frequency',
+	REPEAT_DURATION = 'repeat_duration',
 }
 
 export function isCustomKeyframeChannel(channel: string) {
@@ -170,6 +173,27 @@ registerPropertyOverridePatch({
 	},
 })
 
+registerPropertyOverridePatch({
+	id: `animated_java:keyframe/data-point/repeat-duration`,
+	target: Blockbench.Keyframe.prototype,
+	key: KEYFRAME_DATA_POINTS.REPEAT_DURATION,
+
+	condition: () => activeProjectIsBlueprintFormat(),
+
+	get(this: _Keyframe) {
+		return this.data_points.at(0)?.[KEYFRAME_DATA_POINTS.REPEAT_DURATION] ?? 0
+	},
+
+	set(this: _Keyframe, value: number) {
+		const dataPoint = this.data_points.at(0)
+		if (dataPoint) {
+			dataPoint[KEYFRAME_DATA_POINTS.REPEAT_DURATION] = value
+			return value
+		}
+		return undefined!
+	},
+})
+
 registerProjectPatch({
 	id: 'animated_java:custom-keyframes',
 
@@ -239,6 +263,14 @@ registerProjectPatch({
 			new Property(KeyframeDataPoint, 'number', KEYFRAME_DATA_POINTS.REPEAT_FREQUENCY, {
 				label: translate('effect_animator.keyframe_data_point.repeat_frequency'),
 				default: 1,
+				condition: datapoint =>
+					datapoint.keyframe.channel === EFFECT_ANIMATOR_CHANNELS.FUNCTION,
+				exposed: false,
+			}),
+
+			new Property(KeyframeDataPoint, 'number', KEYFRAME_DATA_POINTS.REPEAT_DURATION, {
+				label: translate('effect_animator.keyframe_data_point.repeat_duration'),
+				default: 0,
 				condition: datapoint =>
 					datapoint.keyframe.channel === EFFECT_ANIMATOR_CHANNELS.FUNCTION,
 				exposed: false,

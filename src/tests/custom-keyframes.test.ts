@@ -10,7 +10,7 @@ const TEXTURE_FOLDER = 'assets/aj/textures/blueprint/test'
  * Blueprint projects: it drops the stock effect channels (keeping `sound`),
  * adds `variant`, `texture_slot` and `function` channels, and hangs typed accessors off
  * `Keyframe` (`.variants`, `.texture_slots`, `.function`, `.execute_condition`, `.repeat`,
- * `.repeat_frequency`). The animation renderer then turns those into
+ * `.repeat_frequency`, `.repeat_duration`). The animation renderer then turns those into
  * `IRenderedFrame.variants` / `.texture_slots` / `.function`.
  *
  * Each test creates its own effects animator inline - `blockbench.evaluate`
@@ -59,6 +59,8 @@ describe('AJ custom keyframes', () => {
 			fkf.execute_condition = 'if score @s x matches 1'
 			fkf.repeat = true
 			fkf.repeat_frequency = 4
+			const defaultDuration = fkf.repeat_duration
+			fkf.repeat_duration = 12
 
 			return {
 				defaultVariants,
@@ -72,6 +74,9 @@ describe('AJ custom keyframes', () => {
 				cond: fkf.execute_condition,
 				repeat: fkf.repeat,
 				freq: fkf.repeat_frequency,
+				defaultDuration,
+				duration: fkf.repeat_duration,
+				durationStored: fkf.data_points[0].repeat_duration,
 				channels: [vkf.channel, skf.channel, fkf.channel],
 			}
 		}, BLUEPRINT_FORMAT_ID)
@@ -85,6 +90,9 @@ describe('AJ custom keyframes', () => {
 		expect(result.cond).toBe('if score @s x matches 1')
 		expect(result.repeat).toBe(true)
 		expect(result.freq).toBe(4)
+		expect(result.defaultDuration).toBe(0)
+		expect(result.duration).toBe(12)
+		expect(result.durationStored).toBe(12)
 		expect(result.channels).toEqual(['variant', 'texture_slot', 'function'])
 	})
 
@@ -156,6 +164,80 @@ describe('AJ custom keyframes', () => {
 		expect(result.frame10HasTextureSlots).toBe(false)
 	})
 
+	it('the animation renderer repeats function keyframes on their schedule', async () => {
+		const result = await blockbench.evaluate(
+			(args: { formatId: string; modelFolder: string; textureFolder: string }) => {
+				const g = globalThis as any
+				g.newProject(g.Formats[args.formatId])
+				const aj = (window as any).AnimatedJava
+				const locator = new Locator({ name: 'loc' }).init()
+
+				const repeating = (
+					animator: any,
+					time: number,
+					fn: string,
+					freq: number,
+					dur = 0
+				) => {
+					const kf = animator.addKeyframe({
+						channel: 'function',
+						time,
+						data_points: [{}],
+					})
+					kf.function = fn
+					kf.repeat = true
+					kf.repeat_frequency = freq
+					kf.repeat_duration = dur
+					return kf
+				}
+
+				const once = new Blockbench.Animation({ name: 'once', loop: 'once' }).add()
+				once.length = 1
+				once.animators.effects ??= new g.EffectAnimator(once)
+				// Tick 3 every 5 for 20 ticks, cut off by the keyframe at tick 15.
+				repeating(once.animators.effects, 0.15, 'say a', 5, 20)
+				// Tick 15 every 4 until the end.
+				repeating(once.animators.effects, 0.75, 'say b', 4)
+				// Tick 2 every 6 for 12 ticks, end included.
+				repeating(once.getBoneAnimator(locator), 0.1, 'say loc', 6, 12)
+
+				const loop = new Blockbench.Animation({ name: 'loop', loop: 'loop' }).add()
+				loop.length = 1
+				loop.animators.effects ??= new g.EffectAnimator(loop)
+				repeating(loop.animators.effects, 0, 'say seam', 5)
+
+				const rig = aj.renderRig(args.modelFolder, args.textureFolder)
+				return aj.renderProjectAnimations(Project, rig).then((animations: any[]) => {
+					const runs = (name: string, fnOf: (frame: any) => string | undefined) =>
+						animations
+							.find(a => a.name === name)
+							.frames.flatMap((frame: any, tick: number) => {
+								const fn = fnOf(frame)
+								return fn ? [`${tick} ${fn}`] : []
+							})
+					return {
+						effects: runs('once', frame => frame.function),
+						locator: runs(
+							'once',
+							frame => frame.node_transforms[locator.uuid]?.function
+						),
+						seam: runs('loop', frame => frame.function),
+					}
+				})
+			},
+			{
+				formatId: BLUEPRINT_FORMAT_ID,
+				modelFolder: MODEL_FOLDER,
+				textureFolder: TEXTURE_FOLDER,
+			}
+		)
+
+		expect(result.effects).toEqual(['3 say a', '8 say a', '13 say a', '15 say b', '19 say b'])
+		expect(result.locator).toEqual(['2 say loc', '8 say loc', '14 say loc'])
+		// The last frame plays in the same tick as the first when looping, so it's skipped.
+		expect(result.seam).toEqual(['0 say seam', '5 say seam', '10 say seam', '15 say seam'])
+	})
+
 	it('survive a codec compile → parse round-trip', async () => {
 		const result = await blockbench.evaluate((formatId: string) => {
 			const g = globalThis as any
@@ -180,6 +262,7 @@ describe('AJ custom keyframes', () => {
 			const fkf = fx.addKeyframe({ channel: 'function', time: 0.5, data_points: [{}] })
 			fkf.function = 'say persisted'
 			fkf.repeat = true
+			fkf.repeat_duration = 8
 
 			const expectedVariants = [red.uuid, aj.Variant.getDefault().uuid]
 			const compiled = codec.compile({ raw: true, bitmaps: false })
@@ -202,6 +285,7 @@ describe('AJ custom keyframes', () => {
 				previewTextureSlots: animation.preview_texture_slots,
 				functionText: functionKf?.data_points?.[0]?.function,
 				functionRepeat: functionKf?.data_points?.[0]?.repeat,
+				functionRepeatDuration: functionKf?.data_points?.[0]?.repeat_duration,
 			}
 		}, BLUEPRINT_FORMAT_ID)
 
@@ -212,5 +296,6 @@ describe('AJ custom keyframes', () => {
 		expect(result.previewTextureSlots).toEqual({ slot: 'texture' })
 		expect(result.functionText).toBe('say persisted')
 		expect(result.functionRepeat).toBe(true)
+		expect(result.functionRepeatDuration).toBe(8)
 	})
 })

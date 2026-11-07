@@ -79,6 +79,7 @@ interface ExportedKeyframe {
 	execute_condition?: string
 	repeat?: boolean
 	repeat_frequency?: number
+	repeat_duration?: number
 }
 type ExportedAnimator = ExportedKeyframe[]
 interface ExportedDynamicAnimation {
@@ -154,6 +155,7 @@ function serailizeKeyframe(kf: _Keyframe): ExportedKeyframe {
 		execute_condition: kf.execute_condition,
 		repeat: kf.repeat,
 		repeat_frequency: kf.repeat_frequency,
+		repeat_duration: kf.repeat_duration,
 	})
 
 	switch (json.channel) {

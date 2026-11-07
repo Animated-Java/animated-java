@@ -986,6 +986,18 @@ animated_java:
           Number of ticks between command repeats.
 
           Set to 1 to run every tick of the animation.
+      repeat_duration:
+        title: Duration
+        placeholder: Until next keyframe
+        description: |-
+          Number of ticks to keep repeating, counting from this keyframe. The run at the end of the duration is included.
+
+          Leave at 0 to repeat until the next function keyframe or the end of the animation.
+      repeat_runs:
+        one: Runs once
+        many: Runs %s times
+      repeat_cutoff: Cut short by the keyframe at %s.
+      repeat_overrun: Runs past the end of the animation at %s.
 
     easings:
       title: Keyframe Easing
@@ -1084,6 +1096,7 @@ animated_java:
       execute_condition: Execute Condition
       repeat: Repeat
       repeat_frequency: Repeat Frequency
+      repeat_duration: Repeat Duration
 
   tool:
     text_display:
