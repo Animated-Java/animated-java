@@ -107,8 +107,10 @@ export class AJMeta {
 				},
 			}),
 		}
-		const { writeFileSync } = getFsModule()
-		writeFileSync(this.path, autoStringify(content))
+		const { existsSync, readFileSync, writeFileSync } = getFsModule()
+		const json = autoStringify(content)
+		if (existsSync(this.path) && readFileSync(this.path, 'utf-8') === json) return
+		writeFileSync(this.path, json)
 	}
 }
 

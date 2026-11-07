@@ -1,13 +1,10 @@
 import type { Zippable } from 'fflate/browser'
 import { getFsModule } from '../../constants'
-import {
-	PROGRESS,
-	PROGRESS_DETAIL,
-	setExportProgressPhase,
-} from '../../dialogs/exportProgress/exportProgress'
+import { setExportProgressPhase } from '../../dialogs/exportProgress/exportProgress'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
+import { removeFiles, writeExportedFiles } from '../packFiles'
 import { type IRenderedRig } from '../rigRenderer'
 import { zip, type ExportedFile } from '../util'
 
@@ -136,65 +133,25 @@ export default async function compileResourcePack(
 		content: autoStringify(packMeta.toJSON()),
 	})
 
-	const { existsSync, promises } = getFsModule()
-	const { writeFile, mkdir, rm, readdir, unlink } = promises
-
 	if (aj.resource_pack_export_mode === 'folder') {
-		// Clean up old files
-		setExportProgressPhase(
-			'Removing Old Resource Pack Files...',
-			ajmeta.previousVersionedFiles.size
-		)
-
-		const removedFolders = new Set<string>()
-		for (const file of ajmeta.previousVersionedFiles) {
-			PROGRESS_DETAIL.set(PathModule.basename(file))
-			if (existsSync(file)) await unlink(file)
-			let folder = PathModule.dirname(file)
-			while (
-				!removedFolders.has(folder) &&
-				existsSync(folder) &&
-				(await readdir(folder)).length === 0
-			) {
-				await rm(folder, { recursive: true })
-				removedFolders.add(folder)
-				folder = PathModule.dirname(folder)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
-
-		// Write new files
-		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
-		ajmeta.versionedFiles = new Set(globalVersionSpecificFiles.keys())
-		ajmeta.write()
-
 		const exportedFiles = new Map<string, ExportedFile>([
 			...globalCoreFiles,
 			...globalVersionSpecificFiles,
 		])
 
-		setExportProgressPhase('Writing Resource Pack...', exportedFiles.size)
-		const createdFolderCache = new Set<string>()
+		const staleFiles = [...ajmeta.previousVersionedFiles].filter(f => !exportedFiles.has(f))
+		setExportProgressPhase('Removing Old Resource Pack Files...', staleFiles.length)
+		await removeFiles(staleFiles)
 
-		for (const [path, file] of exportedFiles) {
-			PROGRESS_DETAIL.set(PathModule.basename(path))
-			const folder = PathModule.dirname(path)
-			if (!createdFolderCache.has(folder)) {
-				await mkdir(folder, { recursive: true })
-				createdFolderCache.add(folder)
-			}
-			if (file.writeHandler) {
-				await file.writeHandler(path, file.content)
-			} else {
-				await writeFile(
-					path,
-					new Uint8Array(
-						Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
-					)
-				)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
-		}
+		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
+		ajmeta.versionedFiles = new Set(globalVersionSpecificFiles.keys())
+		ajmeta.write()
+
+		setExportProgressPhase('Writing Resource Pack...', exportedFiles.size)
+		const written = await writeExportedFiles(exportedFiles)
+		console.log(
+			`Wrote ${written} of ${exportedFiles.size} resource pack files, removed ${staleFiles.length}`
+		)
 	} else if (aj.resource_pack_export_mode === 'zip') {
 		const data: Zippable = {}
 
@@ -216,6 +173,7 @@ export default async function compileResourcePack(
 			Buffer.from(autoStringify(packMeta.toJSON()), 'utf-8')
 		)
 
+		const { rm, writeFile } = getFsModule().promises
 		await rm(options.resourcePackFolder, { recursive: true, force: true })
 		const zipped = await zip(data, {})
 		await writeFile(options.resourcePackFolder, zipped)

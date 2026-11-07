@@ -27,6 +27,7 @@ import { getMCBFilesByVersion } from '../datapackCompiler/mcbFiles'
 import { IntentionalExportError } from '../errors'
 import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
+import { removeFiles, writeExportedFiles, writeFileIfChanged } from '../packFiles'
 import type { AnyRenderedNode, IRenderedRig, IRenderedVariant } from '../rigRenderer'
 import {
 	arrayToNbtFloatArray,
@@ -501,20 +502,19 @@ export default async function compileDataPack(version: string, options: CompileD
 	})
 
 	if (aj.data_pack_export_mode === 'folder') {
-		await removeFiles(ajmeta)
-
-		// Write new files
-		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
-		ajmeta.versionedFiles = new Set(globalVersionSpecificFiles.keys())
-		ajmeta.write()
-
 		const exportedFiles = new Map<string, ExportedFile>([
 			...globalCoreFiles,
 			...globalVersionSpecificFiles,
 		])
 
+		const strippedTags = await removeStaleFiles(ajmeta, exportedFiles)
+
+		ajmeta.coreFiles = new Set(globalCoreFiles.keys())
+		ajmeta.versionedFiles = new Set(globalVersionSpecificFiles.keys())
+		ajmeta.write()
+
 		console.time('Writing DataPack Files took')
-		await writeFiles(exportedFiles, options.dataPackFolder)
+		await writeFiles(exportedFiles, options.dataPackFolder, strippedTags)
 		console.timeEnd('Writing DataPack Files took')
 	} else if (aj.data_pack_export_mode === 'zip') {
 		const data: Zippable = {}
@@ -573,72 +573,65 @@ async function assertProjectIdIsFree(dataPackFolder: string, blueprintId: string
 	}
 }
 
-async function removeFiles(ajmeta: AJMeta) {
+/**
+ * Deletes the files the previous export wrote that this one doesn't, and strips this rig's
+ * entries from the function tags it wrote.
+ * @returns The stripped tags this export writes again, by path, to merge into instead of the disk.
+ */
+async function removeStaleFiles(ajmeta: AJMeta, exportedFiles: Map<string, ExportedFile>) {
 	console.time('Removing Files took')
 	const aj = Project!.animated_java
 	const { existsSync, promises } = getFsModule()
-	const { rm, writeFile, mkdir, copyFile, unlink, readFile } = promises
+	const { mkdir, copyFile, unlink, readFile } = promises
 
-	if (aj.data_pack_export_mode === 'folder') {
-		setExportProgressPhase(
-			'Removing Old Data Pack Files...',
-			ajmeta.previousVersionedFiles.size
-		)
-		const removedFolders = new Set<string>()
-		for (const file of ajmeta.previousVersionedFiles) {
-			PROGRESS_DETAIL.set(PathModule.basename(file))
-			if (isFunctionTagPath(file) && existsSync(file)) {
-				if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
-					const resourceLocation = parseDataPackPath(file)!.resourceLocation
-					if (resourceLocation.startsWith(`${Project!.last_used_blueprint_id}/`)) {
-						const newPath = replacePathPart(
-							file,
-							Project!.last_used_blueprint_id,
-							aj.blueprint_id
-						)
-						await mkdir(PathModule.dirname(newPath), { recursive: true })
-						await copyFile(file, newPath)
-						await unlink(file)
-					}
-				}
-				// Remove mentions of the export namespace from the file
-				let content: FunctionTagJSON
-				// Remove mentions of the export namespace from the file
-				try {
-					content = JSON.parse((await readFile(file)).toString())
-				} catch (e) {
-					if (e instanceof SyntaxError) {
-						throw new IntentionalExportError(
-							`Failed to parse function tag file: '${file}'. Please ensure that the file is valid JSON.`
-						)
-					}
-					continue
-				}
-				content.values = content.values.filter(
-					v =>
-						typeof v === 'string' &&
-						!v.startsWith(`${aj.blueprint_id}/`) &&
-						!v.startsWith(`${Project!.last_used_blueprint_id}/`)
-				)
-				await writeFile(file, autoStringify(content))
-			} else {
-				// Delete the file
-				if (existsSync(file)) await unlink(file)
-			}
-			let folder = PathModule.dirname(file)
-			while (
-				!removedFolders.has(folder) &&
-				existsSync(folder) &&
-				(await promises.readdir(folder)).length === 0
-			) {
-				await rm(folder, { recursive: true })
-				removedFolders.add(folder)
-				folder = PathModule.dirname(folder)
-			}
-			PROGRESS.set(PROGRESS.get() + 1)
+	setExportProgressPhase('Removing Old Data Pack Files...', ajmeta.previousVersionedFiles.size)
+	const strippedTags = new Map<string, FunctionTagJSON>()
+	const staleFiles: string[] = []
+	for (const file of ajmeta.previousVersionedFiles) {
+		if (!isFunctionTagPath(file) || !existsSync(file)) {
+			if (exportedFiles.has(file)) PROGRESS.set(PROGRESS.get() + 1)
+			else staleFiles.push(file)
+			continue
 		}
+		PROGRESS_DETAIL.set(PathModule.basename(file))
+		PROGRESS.set(PROGRESS.get() + 1)
+		if (aj.blueprint_id !== Project!.last_used_blueprint_id) {
+			const resourceLocation = parseDataPackPath(file)!.resourceLocation
+			if (resourceLocation.startsWith(`${Project!.last_used_blueprint_id}/`)) {
+				const newPath = replacePathPart(
+					file,
+					Project!.last_used_blueprint_id,
+					aj.blueprint_id
+				)
+				await mkdir(PathModule.dirname(newPath), { recursive: true })
+				await copyFile(file, newPath)
+				await unlink(file)
+			}
+		}
+		// Remove mentions of the export namespace from the file
+		let content: FunctionTagJSON
+		try {
+			content = JSON.parse((await readFile(file)).toString())
+		} catch (e) {
+			if (e instanceof SyntaxError) {
+				throw new IntentionalExportError(
+					`Failed to parse function tag file: '${file}'. Please ensure that the file is valid JSON.`
+				)
+			}
+			continue
+		}
+		content.values = content.values.filter(
+			v =>
+				typeof v === 'string' &&
+				!v.startsWith(`${aj.blueprint_id}/`) &&
+				!v.startsWith(`${Project!.last_used_blueprint_id}/`)
+		)
+		if (exportedFiles.has(file)) strippedTags.set(file, content)
+		else await writeFileIfChanged(file, autoStringify(content))
 	}
+	await removeFiles(staleFiles)
 	console.timeEnd('Removing Files took')
+	return strippedTags
 }
 
 const dataPackCompiler: DataPackCompiler = async ({
@@ -675,7 +668,6 @@ const dataPackCompiler: DataPackCompiler = async ({
 		display_item: aj.display_item,
 		rig,
 		animations,
-		export_version: Math.random().toString().substring(2, 10),
 		root_entity_passengers: await generateRootEntityPassengers(version, rig),
 		TAGS,
 		OBJECTIVES,
@@ -751,61 +743,42 @@ const dataPackCompiler: DataPackCompiler = async ({
 	})
 }
 
-async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFolder: string) {
-	setExportProgressPhase('Writing Data Pack...', exportedFiles.size)
+/**
+ * Writes the changed files, then merges function tags into the ones already on disk.
+ * @param strippedTags Tags {@link removeStaleFiles} stripped, to merge into instead of the disk.
+ */
+async function writeFiles(
+	exportedFiles: Map<string, ExportedFile>,
+	dataPackFolder: string,
+	strippedTags: Map<string, FunctionTagJSON>
+) {
 	const aj = Project!.animated_java
 	const lastNamespace = Project!.last_used_blueprint_id
-	const createdFolderCache = new Set<string>()
-
-	const functionTagQueue = new Map<string, ExportedFile>()
 
 	const { existsSync, readdirSync, promises } = getFsModule()
-	const { mkdir, readFile, writeFile } = promises
+	const { readFile } = promises
 
-	async function customWriteFile(path: string, file: ExportedFile) {
-		if (isFunctionTagPath(path) && existsSync(path)) {
-			functionTagQueue.set(path, file)
-			return
+	const plainFiles = new Map<string, ExportedFile>()
+	const functionTagQueue = new Map<string, ExportedFile>()
+	for (const [path, file] of exportedFiles) {
+		if (!isFunctionTagPath(path)) plainFiles.set(path, file)
+		else if (existsSync(path)) functionTagQueue.set(path, file)
+		else {
+			// Format new tags like merged ones, so the next export doesn't rewrite them.
+			const tag = DataPackTag.fromJSON(JSON.parse(file.content.toString())).sort()
+			plainFiles.set(path, { ...file, content: autoStringify(tag.toJSON()) })
 		}
-
-		const folder = PathModule.dirname(path)
-		if (!createdFolderCache.has(folder)) {
-			await mkdir(folder, { recursive: true })
-			createdFolderCache.add(folder)
-		}
-		if (file.writeHandler) {
-			await file.writeHandler(path, file.content)
-		} else {
-			await writeFile(
-				path,
-				new Uint8Array(
-					Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content)
-				)
-			)
-		}
-		PROGRESS_DETAIL.set(PathModule.basename(path))
-		PROGRESS.set(PROGRESS.get() + 1)
 	}
 
-	const maxWriteThreads = 8
-	const writeQueue = new Map<string, Promise<void>>()
-	for (const [path, data] of exportedFiles) {
-		writeQueue.set(
-			path,
-			customWriteFile(path, data).finally(() => {
-				writeQueue.delete(path)
-			})
-		)
-		if (writeQueue.size >= maxWriteThreads) {
-			await Promise.any(writeQueue.values())
-		}
-	}
-	await Promise.all(writeQueue.values())
+	setExportProgressPhase('Writing Data Pack...', plainFiles.size)
+	let written = await writeExportedFiles(plainFiles)
 
 	setExportProgressPhase('Merging Function Tags...', functionTagQueue.size)
 	for (const [path, file] of functionTagQueue.entries()) {
 		PROGRESS_DETAIL.set(PathModule.basename(path))
-		const oldTag = DataPackTag.fromJSON(JSON.parse((await readFile(path)).toString()))
+		const oldTag = DataPackTag.fromJSON(
+			strippedTags.get(path) ?? JSON.parse((await readFile(path)).toString())
+		)
 		const merged = oldTag.merge(DataPackTag.fromJSON(JSON.parse(file.content.toString())))
 
 		merged.filter(entry => {
@@ -847,7 +820,8 @@ async function writeFiles(exportedFiles: Map<string, ExportedFile>, dataPackFold
 
 		merged.sort()
 
-		await writeFile(path, autoStringify(merged.toJSON()))
+		if (await writeFileIfChanged(path, autoStringify(merged.toJSON()))) written++
 		PROGRESS.set(PROGRESS.get() + 1)
 	}
+	console.log(`Wrote ${written} of ${exportedFiles.size} data pack files`)
 }

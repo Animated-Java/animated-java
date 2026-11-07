@@ -2,7 +2,7 @@ import { describe, expect, it } from '@jest/globals'
 import { blockbench } from '@snavesutit/jestbench'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import { relFiles, runFixtureExport } from './helpers/export'
+import { listFilesRecursive, relFiles, runFixtureExport } from './helpers/export'
 
 /**
  * The `.ajmeta` files (`data.ajmeta` / `assets.ajmeta`) record which files an
@@ -82,6 +82,56 @@ describe('.ajmeta incremental export', () => {
 					f.endsWith(`/models/blueprint/player/${removed}.json`)
 				)
 			).toBe(false)
+		} finally {
+			run.cleanup()
+		}
+	}, 240_000)
+
+	it('only writes files whose content changed', async () => {
+		const run = await runFixtureExport({ fixture: 'test_blueprints/player.ajblueprint' })
+		try {
+			expect(run.ok).toBe(true)
+
+			// Backdate every exported file, so any later write shows up as a newer mtime.
+			const backdatedTime = new Date(1_000_000_000_000)
+			const backdate = (folder: string) => {
+				for (const file of listFilesRecursive(folder))
+					fs.utimesSync(file, backdatedTime, backdatedTime)
+			}
+			const touched = (folder: string) =>
+				relFiles(folder).filter(
+					f => fs.statSync(path.join(folder, f)).mtimeMs !== backdatedTime.getTime()
+				)
+			const reExport = () =>
+				blockbench.evaluate(() => (window as any).AnimatedJava.exportProject())
+
+			backdate(run.dataPackFolder)
+			backdate(run.resourcePackFolder)
+			expect(await reExport()).toBe(true)
+			expect(touched(run.dataPackFolder)).toEqual([])
+			expect(touched(run.resourcePackFolder)).toEqual([])
+
+			const removed = await blockbench.evaluate(() => {
+				const victim = Group.all.find(
+					group =>
+						group.name !== 'root' &&
+						group.children.some((c: any) => c instanceof Cube) &&
+						!group.children.some((c: any) => c instanceof Group)
+				)
+				const name = victim?.name
+				victim?.remove()
+				return name
+			})
+			expect(removed).toBeTruthy()
+
+			const dataFilesBefore = relFiles(run.dataPackFolder).length
+			expect(await reExport()).toBe(true)
+			// Only the asset list changes; the other bones' models and the textures stay put.
+			expect(touched(run.resourcePackFolder)).toEqual(['assets.ajmeta'])
+			// Functions referencing the bone change, but most of the data pack doesn't.
+			const touchedData = touched(run.dataPackFolder)
+			expect(touchedData).toContain('data.ajmeta')
+			expect(touchedData.length).toBeLessThan(dataFilesBefore / 2)
 		} finally {
 			run.cleanup()
 		}
