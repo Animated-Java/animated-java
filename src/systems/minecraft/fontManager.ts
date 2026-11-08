@@ -1,7 +1,8 @@
 import { UnicodeString, type StyledSegment, type TextComponentStyle } from 'book-and-quill'
 import MissingCharacter from '../../assets/missing_character.png'
 import { getPathFromResourceLocation } from '../../util/minecraftUtil'
-import { getAllJSONAssets, getJSONAsset, getPngAsset } from './assetManager'
+import { getAllJSONAssets, getJSONAsset, getPngAsset, getRawAsset } from './assetManager'
+import { parseTrueTypeFont, type TrueTypeFontInfo } from './trueTypeFont'
 
 namespace MinecraftJson {
 	export interface FontProviderBitmap {
@@ -25,7 +26,20 @@ namespace MinecraftJson {
 		advances: Record<string, number>
 	}
 
-	export type FontProvider = FontProviderBitmap | FontProviderReference | FontProviderSpace
+	export interface FontProviderTrueType {
+		type: 'ttf'
+		file: string
+		size?: number
+		oversample?: number
+		shift?: [number, number]
+		skip?: string | string[]
+	}
+
+	export type FontProvider =
+		| FontProviderBitmap
+		| FontProviderReference
+		| FontProviderSpace
+		| FontProviderTrueType
 
 	export interface Font {
 		providers: FontProvider[]
@@ -38,6 +52,8 @@ interface CachedBitmapChar {
 	width: number
 	/** Factor from atlas pixels to rendered pixels (`height` field / native cell height). */
 	scale: number
+	/** Left edge of the glyph quad relative to the pen, in rendered pixels. */
+	bearingX?: number
 	atlas: THREE.Texture
 	bitmapUV: {
 		x: number
@@ -69,8 +85,20 @@ function createMissingCharacter(): CachedBitmapChar {
 	}
 }
 
+/** Samples glyph atlases as crisp pixels, keeping colours (emoji fonts) accurate. */
+function configureGlyphTexture(texture: THREE.Texture) {
+	texture.magFilter = THREE.NearestFilter
+	texture.minFilter = THREE.NearestFilter
+	texture.generateMipmaps = false
+	if ('colorSpace' in texture) {
+		;(texture as any).colorSpace = (THREE as any).SRGBColorSpace
+	} else if ('encoding' in texture) {
+		;(texture as any).encoding = (THREE as any).sRGBEncoding
+	}
+}
+
 abstract class FontProvider {
-	type: 'bitmap' | 'reference' | 'space'
+	type: MinecraftJson.FontProvider['type']
 	loaded = false
 
 	constructor(providerJSON: MinecraftJson.FontProvider) {
@@ -80,6 +108,11 @@ abstract class FontProvider {
 	abstract load(): Promise<this> | this
 
 	abstract getChar(char: string): CachedChar | undefined
+
+	/** Frees resources held outside the JS heap (registered fonts, GPU textures). */
+	dispose() {
+		// Most providers only hold JS-heap data.
+	}
 
 	static async fromAssetPath(assetPath: string) {
 		if (!assetPath.endsWith('.json')) assetPath += '.json'
@@ -94,6 +127,8 @@ abstract class FontProvider {
 				return new ReferenceFontProvider(providerJSON)
 			case 'space':
 				return new SpaceFontProvider(providerJSON)
+			case 'ttf':
+				return new TrueTypeFontProvider(providerJSON)
 			default:
 				throw new Error(
 					`Unsupported font provider type: ${(providerJSON as any).type as string}`
@@ -108,7 +143,10 @@ class ReferenceFontProvider extends FontProvider {
 	constructor(providerJSON: MinecraftJson.FontProviderReference) {
 		super(providerJSON)
 		const path = getPathFromResourceLocation(providerJSON.id, 'font')
-		this.reference = new MinecraftFont(providerJSON.id, path + '.json')
+		// Reuse a registered font so clearFontCache can still reach (and dispose) it.
+		this.reference =
+			MinecraftFont.all.get(providerJSON.id) ??
+			new MinecraftFont(providerJSON.id, path + '.json')
 	}
 
 	async load() {
@@ -191,15 +229,7 @@ class BitmapFontProvider extends FontProvider {
 			this.bitmapPath
 		)
 		const texture = await new THREE.TextureLoader().loadAsync(dataUrl)
-		// Sample the atlas as crisp pixels, and keep colours (emoji fonts) accurate.
-		texture.magFilter = THREE.NearestFilter
-		texture.minFilter = THREE.NearestFilter
-		texture.generateMipmaps = false
-		if ('colorSpace' in texture) {
-			;(texture as any).colorSpace = (THREE as any).SRGBColorSpace
-		} else if ('encoding' in texture) {
-			;(texture as any).encoding = (THREE as any).sRGBEncoding
-		}
+		configureGlyphTexture(texture)
 
 		this.atlas = texture
 		this.charHeight = texture.image.height / this.chars.length
@@ -287,8 +317,239 @@ class BitmapFontProvider extends FontProvider {
 	}
 }
 
+const GLYPH_ATLAS_SIZE = 512
+const GLYPH_ATLAS_PADDING = 1
+
+interface GlyphAtlasPage {
+	texture: THREE.DataTexture
+	data: Uint8Array
+	size: number
+	shelfX: number
+	shelfY: number
+	shelfHeight: number
+}
+
+/**
+ * Shelf-packed pages that rasterized glyphs are copied into, so every glyph of
+ * a font shares a few textures (one draw batch each). Pages never resize, so a
+ * glyph's UVs stay valid as more are added.
+ */
+class GlyphAtlas {
+	private pages: GlyphAtlasPage[] = []
+
+	/** Copies a glyph's coverage (the alpha of `rgba`) in as `(a, a, a, a)`, matching
+	 * the `.rrrr` sample Minecraft's text shader takes of grayscale glyphs. */
+	add(width: number, height: number, rgba: Uint8ClampedArray) {
+		const page = this.findSpace(width, height)
+		const x = page.shelfX
+		const y = page.shelfY
+		for (let row = 0; row < height; row++) {
+			// Rows are stored bottom-up (DataTextures don't flipY), so the image-space
+			// `v = 1 - y / height` the renderer uses still lands on this glyph.
+			const destRow = (page.size - 1 - (y + row)) * page.size
+			for (let col = 0; col < width; col++) {
+				const alpha = rgba[(row * width + col) * 4 + 3]
+				page.data.fill(alpha, (destRow + x + col) * 4, (destRow + x + col + 1) * 4)
+			}
+		}
+		page.shelfX += width + GLYPH_ATLAS_PADDING
+		page.shelfHeight = Math.max(page.shelfHeight, height)
+		page.texture.needsUpdate = true
+		return { texture: page.texture, x, y }
+	}
+
+	dispose() {
+		for (const page of this.pages) page.texture.dispose()
+		this.pages = []
+	}
+
+	private findSpace(width: number, height: number): GlyphAtlasPage {
+		const page = this.pages.at(-1)
+		if (page) {
+			if (page.shelfX + width > page.size) {
+				page.shelfY += page.shelfHeight + GLYPH_ATLAS_PADDING
+				page.shelfX = 0
+				page.shelfHeight = 0
+			}
+			if (page.shelfX + width <= page.size && page.shelfY + height <= page.size) return page
+		}
+		return this.addPage(Math.max(width, height))
+	}
+
+	private addPage(minSize: number): GlyphAtlasPage {
+		let size = GLYPH_ATLAS_SIZE
+		while (size < minSize) size *= 2
+		const data = new Uint8Array(size * size * 4)
+		const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
+		configureGlyphTexture(texture)
+		const page = { texture, data, size, shelfX: 0, shelfY: 0, shelfHeight: 0 }
+		this.pages.push(page)
+		return page
+	}
+}
+
+const isAtLeastVersion = (version: string, minimum: string) => !compareVersions(minimum, version)
+
+/**
+ * Minecraft's `ttf` provider. Glyphs are drawn by the browser (the file is
+ * registered through `FontFace`) but placed with Minecraft's own math, which
+ * depends on the target version's rasterizer:
+ *
+ * - 1.20.5+ uses FreeType: the em is `round(size * oversample)` px, advances are
+ *   hinted to whole pixels, and only TrueType (`glyf`) outlines load.
+ * - 1.20.4 uses stb_truetype: ascent-to-descent spans `size * oversample` px,
+ *   advances are fractional, only the BMP is covered, and `shift` (plus the
+ *   left side bearing) is counted twice.
+ */
+class TrueTypeFontProvider extends FontProvider {
+	private static nextFamilyId = 0
+
+	private filePath: string
+	private size: number
+	private oversample: number
+	private shiftX: number
+	private shiftY: number
+	private skip: Set<number>
+
+	private info: TrueTypeFontInfo | undefined
+	private rasterizer: 'freetype' | 'stb' = 'freetype'
+	private emPx = 0
+	private ascentPx = 0
+	private family = `animated-java-ttf-${TrueTypeFontProvider.nextFamilyId++}`
+	private face: FontFace | undefined
+	private atlas = new GlyphAtlas()
+	private canvas = document.createElement('canvas')
+	private ctx = this.canvas.getContext('2d', { willReadFrequently: true })!
+	private charCache = new Map<string, CachedChar | null>()
+
+	constructor(providerJSON: MinecraftJson.FontProviderTrueType) {
+		super(providerJSON)
+		this.filePath = getPathFromResourceLocation(providerJSON.file, 'font')
+		this.size = providerJSON.size ?? 11
+		this.oversample = providerJSON.oversample ?? 1
+		this.shiftX = providerJSON.shift?.[0] ?? 0
+		this.shiftY = providerJSON.shift?.[1] ?? 0
+		const skip = providerJSON.skip ?? ''
+		const skipped = Array.isArray(skip) ? skip.join('') : skip
+		this.skip = new Set(Array.from(skipped, char => char.codePointAt(0)!))
+	}
+
+	async load() {
+		if (this.loaded) return this
+		const version = Project.animated_java.target_minecraft_version
+		// A copy in its own ArrayBuffer: FontFace takes the whole buffer, not the view.
+		const data = new Uint8Array(await getRawAsset(version, this.filePath))
+		const info = parseTrueTypeFont(data)
+
+		this.rasterizer = isAtLeastVersion(version, '1.20.5') ? 'freetype' : 'stb'
+		if (this.rasterizer === 'freetype' && info.outlines === 'cff') {
+			throw new Error(
+				`'${this.filePath}' uses CFF outlines, which Minecraft ${version} can't load (only TrueType outlines are supported)`
+			)
+		}
+
+		const pixelSize = this.size * this.oversample
+		if (this.rasterizer === 'freetype') {
+			this.emPx = Math.round(pixelSize)
+		} else {
+			const scale = pixelSize / (info.ascender - info.descender)
+			this.emPx = scale * info.unitsPerEm
+			this.ascentPx = info.ascender * scale
+		}
+		if (!(this.emPx > 0)) {
+			throw new Error(`Invalid ttf size ${this.size} x oversample ${this.oversample}`)
+		}
+
+		const face = new FontFace(this.family, data)
+		await face.load()
+		document.fonts.add(face)
+		this.face = face
+		this.info = info
+		this.loaded = true
+		return this
+	}
+
+	dispose() {
+		if (this.face) document.fonts.delete(this.face)
+		this.face = undefined
+		this.atlas.dispose()
+		this.charCache.clear()
+	}
+
+	getChar(char: string): CachedChar | undefined {
+		// Disposed (cache cleared mid-render): the canvas would draw a system fallback font.
+		if (!this.face) return undefined
+		const cached = this.charCache.get(char)
+		if (cached !== undefined) return cached ?? undefined
+
+		const codePoint = char.codePointAt(0)!
+		const covered =
+			!!this.info?.codePoints.has(codePoint) &&
+			!this.skip.has(codePoint) &&
+			(this.rasterizer === 'freetype' || codePoint <= 0xffff)
+		const result = covered ? this.rasterize(char) : null
+		this.charCache.set(char, result)
+		return result ?? undefined
+	}
+
+	private rasterize(char: string): CachedChar {
+		const oversample = this.oversample
+		const shiftX = this.shiftX * oversample
+		const shiftY = this.shiftY * oversample
+		const font = `${this.emPx}px "${this.family}"`
+		this.ctx.font = font
+		const metrics = this.ctx.measureText(char)
+
+		// The glyph's pixel box relative to the pen (y down), shifted then snapped
+		// outwards - FreeType's bitmap box and stb's GetGlyphBitmapBoxSubpixel agree.
+		const left = Math.floor(-metrics.actualBoundingBoxLeft + shiftX)
+		const right = Math.ceil(metrics.actualBoundingBoxRight + shiftX)
+		const top = Math.floor(-metrics.actualBoundingBoxAscent + shiftY)
+		const bottom = Math.ceil(metrics.actualBoundingBoxDescent + shiftY)
+		const width = right - left
+		const height = bottom - top
+
+		let advance: number
+		let bearingX: number
+		let ascent: number
+		if (this.rasterizer === 'freetype') {
+			advance = Math.round(metrics.width) / oversample
+			bearingX = left / oversample
+			ascent = -top / oversample
+		} else {
+			advance = metrics.width / oversample
+			bearingX = (-metrics.actualBoundingBoxLeft + left + shiftX) / oversample
+			// 1.20.4's bearing top, measured down from 3px above the line; 10 - it
+			// converts that to the `ascent` bitmap glyphs use.
+			ascent = 10 - (this.ascentPx + top + shiftY) / oversample
+		}
+
+		if (width <= 0 || height <= 0) return { type: 'space', width: advance }
+
+		// Resizing resets the context, so set the font again afterwards.
+		this.canvas.width = width
+		this.canvas.height = height
+		this.ctx.font = font
+		this.ctx.fillStyle = '#fff'
+		this.ctx.fillText(char, shiftX - left, shiftY - top)
+		const pixels = this.ctx.getImageData(0, 0, width, height).data
+		const slot = this.atlas.add(width, height, pixels)
+
+		return {
+			type: 'bitmap',
+			ascent,
+			width: advance,
+			scale: 1 / oversample,
+			bearingX,
+			atlas: slot.texture,
+			bitmapUV: { x: slot.x, y: slot.y, width, height },
+		}
+	}
+}
+
 export class MinecraftFont {
 	static all = new Map<string, MinecraftFont>()
+	private static loadedVersion: string | undefined
 
 	id: string
 	providers: FontProvider[] = []
@@ -308,6 +569,14 @@ export class MinecraftFont {
 	}
 
 	static async getById(id: string) {
+		// Fonts load against one Minecraft version's assets (and, for ttf, its
+		// rasterizer), so a target version change invalidates every loaded font.
+		const version = Project.animated_java.target_minecraft_version
+		if (version !== MinecraftFont.loadedVersion) {
+			clearFontCache()
+			MinecraftFont.loadedVersion = version
+		}
+
 		let font = MinecraftFont.all.get(id)
 
 		if (!font) {
@@ -369,6 +638,9 @@ export class MinecraftFont {
 					break
 				case 'space':
 					this.providers.push(new SpaceFontProvider(providerJSON))
+					break
+				case 'ttf':
+					this.providers.push(new TrueTypeFontProvider(providerJSON))
 					break
 				default:
 					console.warn(
@@ -434,6 +706,9 @@ export class MinecraftFont {
  * Pair with `fontRenderer`'s `clearGlyphGeometryCache()`.
  */
 export function clearFontCache() {
+	for (const font of MinecraftFont.all.values()) {
+		for (const provider of font.providers) provider.dispose()
+	}
 	MinecraftFont.all.clear()
 }
 

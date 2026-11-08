@@ -140,7 +140,9 @@ function buildGlyphGeo(font: MinecraftFont, char: string, flags: number): GlyphG
 		const glyphW = pw * charData.scale + boldExtra
 		const glyphH = ph * charData.scale
 		const top = charData.ascent + 1
-		const tris = new Float32Array(quadTris(0, top - glyphH, glyphW, glyphH))
+		const tris = new Float32Array(
+			quadTris(charData.bearingX ?? 0, top - glyphH, glyphW, glyphH)
+		)
 		if (flags & ITALIC) shearInPlace(tris)
 		geo.tris = tris
 
@@ -512,7 +514,8 @@ export async function generateTextDisplayMesh({
 				map: b.atlas,
 				vertexColors: true,
 				transparent: true,
-				alphaTest: 0.01,
+				// Minecraft's text shader discards fragments below 0.1 alpha.
+				alphaTest: 0.1,
 				// Minecraft text displays only draw their front face.
 				side: THREE.FrontSide,
 			})

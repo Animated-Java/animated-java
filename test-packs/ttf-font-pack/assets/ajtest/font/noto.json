@@ -1,0 +1,6 @@
+{
+	"providers": [
+		{ "type": "ttf", "file": "ajtest:noto_sans.ttf", "skip": "B" },
+		{ "type": "reference", "id": "minecraft:default" }
+	]
+}

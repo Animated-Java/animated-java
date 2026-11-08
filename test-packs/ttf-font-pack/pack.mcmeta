@@ -1,0 +1,6 @@
+{
+	"pack": {
+		"pack_format": 42,
+		"description": "Jestbench fixture: TrueType and CFF font providers. Fonts are OFL subsets of Noto Sans and STIX Two Text (licenses alongside them)."
+	}
+}

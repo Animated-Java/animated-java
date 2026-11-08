@@ -13,6 +13,7 @@ pure-logic modules that don't touch host globals.
 - `unit/minecraftUtil.test.ts` — resource-location / data-pack / resource-pack path parsing, `toSmallCaps`, `sanitizeStorageKey`, `resolveBlockstateValueType`
 - `unit/fileUtil.test.ts` — path normalisation, env-var expansion, `swapPathRoot`, tag-path detection
 - `unit/collectionFile.test.ts` — `.bpcollection` parsing/validation, member and pack path resolution relative to the collection
+- `unit/trueTypeFont.test.ts` — TrueType/OpenType parsing for the `ttf` font provider: cmap formats 4 and 12, outline format (glyf vs CFF), metrics, malformed-file errors
 
 `unit/setup.ts` binds the `PathModule` global to `node:path`; `unit/__stubs__/`
 replaces host-dependent sibling imports (fs accessor, block/registry lookups)
@@ -58,6 +59,7 @@ can reach them: `renderRig`, `renderProjectAnimations`, `hashRig`,
 - `minecraft-assets.test.ts` — `assetManager` JSON/PNG lookups, `blockModelManager` / `itemModelManager` vanilla mesh builds, `getBlockState`
 - `vanilla-display-rendering.test.ts` — `bmrModelRenderer` blockstate variant selection (stairs facing, slab type) and item-model predicate + display-mode resolution
 - `preview-resource-pack-font.test.ts` — regression for a stale font-layout cache
+- `ttf-font-provider.test.ts` — `ttf` font providers (`test-packs/ttf-font-pack/`): FreeType (1.20.5+) vs stb_truetype (1.20.4) metrics, `size` / `oversample` / `shift` / `skip`, fallthrough to the next provider, CFF refusal on 1.20.5+, font reload on a target-version change, text-display mesh batches
 
 **UI & mods**
 

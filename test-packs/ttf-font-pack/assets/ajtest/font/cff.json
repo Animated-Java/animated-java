@@ -1,0 +1,6 @@
+{
+	"providers": [
+		{ "type": "ttf", "file": "ajtest:stix_two_cff.otf" },
+		{ "type": "reference", "id": "minecraft:default" }
+	]
+}

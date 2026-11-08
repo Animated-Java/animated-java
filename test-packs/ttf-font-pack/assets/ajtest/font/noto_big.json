@@ -1,0 +1,3 @@
+{
+	"providers": [{ "type": "ttf", "file": "ajtest:noto_sans.ttf", "size": 22 }]
+}
