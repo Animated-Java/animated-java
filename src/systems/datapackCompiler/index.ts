@@ -21,6 +21,7 @@ import {
 } from '../../util/minecraftUtil'
 import { eulerFromQuaternion, roundTo } from '../../util/misc'
 import { MSLimiter } from '../../util/msLimiter'
+import { LAST_LEGACY_PACK_FORMAT, setPackFormat } from '../../util/packFormat'
 import { Variant } from '../../variants'
 import type { IRenderedAnimation } from '../animationRenderer'
 import { getMCBFilesByVersion } from '../datapackCompiler/mcbFiles'
@@ -486,16 +487,7 @@ export default async function compileDataPack(version: string, options: CompileD
 	const misodeVersionData = await getMisodeVersion(version)
 	const format = misodeVersionData.data_pack_version
 
-	if (VersionUtil.compare(version, '>=', '1.21.9')) {
-		packMeta.content.pack.min_format = format
-		packMeta.content.pack.max_format = format
-	} else {
-		packMeta.content.pack.pack_format = format
-		packMeta.content.pack.supported_formats = {
-			min_inclusive: format,
-			max_inclusive: format,
-		}
-	}
+	setPackFormat(packMeta.content.pack, format, LAST_LEGACY_PACK_FORMAT.data_pack)
 
 	packMeta.content.pack.description ??= `Animated Java Data Pack for ${version}`
 

@@ -31,9 +31,13 @@ describe('Export contents (player fixture)', () => {
 	// --- data pack -----------------------------------------------------------
 
 	it('writes a version-appropriate pack.mcmeta', () => {
-		const meta = JSON.parse(readDp('pack.mcmeta'))
-		expect(typeof meta.pack.pack_format).toBe('number')
-		expect(meta.pack.pack_format).toBeGreaterThan(0)
+		// The fixture targets the default version, which declares min/max formats only, so the
+		// helper's seeded pack_format is gone.
+		const { pack } = JSON.parse(readDp('pack.mcmeta'))
+		expect(typeof pack.min_format).toBe('number')
+		expect(pack.max_format).toBe(pack.min_format)
+		expect(pack).not.toHaveProperty('pack_format')
+		expect(pack).not.toHaveProperty('supported_formats')
 	})
 
 	it('the summon function summons an item_display and runs the rig setup', () => {

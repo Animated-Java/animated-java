@@ -46,6 +46,7 @@ export interface ExportOptions {
 	 * source, so it can't close over anything.
 	 */
 	setup?: (aj: any) => void
+	packMeta?: object
 }
 
 /**
@@ -61,7 +62,9 @@ export async function runFixtureExport(options: ExportOptions): Promise<ExportRu
 		fs.mkdirSync(folder)
 		fs.writeFileSync(
 			path.join(folder, 'pack.mcmeta'),
-			JSON.stringify({ pack: { pack_format: 48, description: 'aj test' } })
+			JSON.stringify(
+				options.packMeta ?? { pack: { pack_format: 48, description: 'aj test' } }
+			)
 		)
 	}
 

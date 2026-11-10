@@ -6,6 +6,7 @@ import { AJMeta, PackMeta } from '../global'
 import { getMisodeVersion } from '../minecraft/versionManager'
 import { removeFiles, writeExportedFiles } from '../packFiles'
 import { type IRenderedRig } from '../rigRenderer'
+import { LAST_LEGACY_PACK_FORMAT, setPackFormat } from '../../util/packFormat'
 import { zip, type ExportedFile } from '../util'
 
 import EXPORT_1_20_4 from './1.20.4'
@@ -124,16 +125,7 @@ export default async function compileResourcePack(
 	const misodeVersionData = await getMisodeVersion(version)
 
 	const format = misodeVersionData.resource_pack_version
-	if (VersionUtil.compare(version, '>=', '1.21.9')) {
-		packMeta.content.pack.min_format = format
-		packMeta.content.pack.max_format = format
-	} else {
-		packMeta.content.pack.pack_format = format
-		packMeta.content.pack.supported_formats = {
-			min_inclusive: format,
-			max_inclusive: format,
-		}
-	}
+	setPackFormat(packMeta.content.pack, format, LAST_LEGACY_PACK_FORMAT.resource_pack)
 
 	packMeta.content.pack.description ??= `Animated Java Resource Pack for ${version}`
 
