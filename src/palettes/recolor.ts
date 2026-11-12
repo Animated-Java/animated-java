@@ -17,6 +17,19 @@ export function parseHex(hex: string): [number, number, number, number] {
 	return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255]
 }
 
+/** A palette color as Blockbench's Palette panel shows it: `#rrggbb`, or `#rrggbbaa` if translucent. */
+export function toPanelColor(color: string): string {
+	const [r, g, b, a] = parseHex(color)
+	const hex = toHex(r, g, b, a)
+	return a === 255 ? hex.slice(0, 7) : hex
+}
+
+/** A Palette panel color as `#rrggbbaa`, or undefined if it isn't a hex color. */
+export function fromPanelColor(color: string): string | undefined {
+	if (!/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)) return undefined
+	return toHex(...parseHex(color))
+}
+
 export function colorsFromPixels(data: Uint8ClampedArray): PaletteColors {
 	const colors: PaletteColors = []
 	for (let i = 0; i < data.length; i += 4) {

@@ -1343,9 +1343,29 @@ animated_java:
       select_base: Select Base Texture
     paint_reference: This texture is from a resource pack and can't be painted.
     paint_off_palette: "%s isn't in this palette, so it won't recolor."
-    paint:
+    permutation_panel:
+      title: Permutation
       colorway: Preview a colorway on the model
-      as_assigned: As Assigned
+      as_assigned: As Assigned (%s)
+      empty: Paint a Permutation Set's texture to edit its colors here.
+    swatch:
+      pick_or_edit: '%s. Click to use as brush color, right-click to edit.'
+      use_as_brush_color: Use as brush color
+      set_to_brush_color: Set to brush color
+    palette_panel:
+      load:
+        name: Load Permutation Palette
+        description: Replace the palette with a Permutation Set's key or palette
+      save:
+        name: Save to Permutation Set
+        description: Save the palette into a Permutation Set as a permutation
+        new_permutation: New Permutation...
+      saved: Saved the palette to "%s".
+      strip_unreadable: Couldn't read that palette.
+      key_unreadable: Couldn't read the set's palette key.
+      invalid_color: The palette has a color that isn't a hex color.
+      length: The palette has %s colors, but the set's key has %s. Change the palette to match the key's colors first.
+      permutation_missing: That permutation no longer exists.
     delete_recolor: Recolored textures can't be deleted. Remove their base or permutation from the Permutation Set instead.
     group_managed: Only a Permutation Set's recolors can go in its group.
     export_error: 'Permutation Set "%s": %s'
@@ -1368,13 +1388,13 @@ animated_java:
         no_bases: No base textures. Add the textures you want to recolor.
         no_more_bases: There are no more textures to add.
         remove: Remove
-        key: Palette Key
+        key: Key
         extract_key: Create key from base textures
         extract_needs_bases: Add a base texture first.
         extract_replace: Replace Key
         extract_merge: Add New Colors to Key
         change_key: Change key
-        key_color: '%s. Click to edit.'
+        key_color: '%s. Right-click to edit.'
         remove_key_color: Remove color from key and palettes
         import_key: Import Key Image...
         permutations: Permutations
@@ -1391,7 +1411,7 @@ animated_java:
         apply_palette: Apply palette
         stored_colors: Custom palette
         duplicate_permutation: Duplicate permutation
-        palette_color: '%s. Click to edit.'
+        palette_color: '%s. Right-click to edit.'
         palette_color_missing: Missing color. Click to add.
         copy_palette_to_edit: Copy palette to edit
         copy_key_to_edit: Copy key to edit

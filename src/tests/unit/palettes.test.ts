@@ -7,17 +7,24 @@ import {
 	getTextureImagePath,
 	supportsSeparator,
 } from '../../palettes/atlas'
-import { checkPaletteSet, type IPaletteCheckInput } from '../../palettes/checks'
+import {
+	checkPaletteSet,
+	toSuffix,
+	uniqueSuffix,
+	type IPaletteCheckInput,
+} from '../../palettes/checks'
 import {
 	colorsFromPixels,
 	extractKey,
 	findDuplicateKeyColors,
+	fromPanelColor,
 	mapToKey,
 	mergeKey,
 	parseHex,
 	pixelsFromColors,
 	recolor,
 	toHex,
+	toPanelColor,
 } from '../../palettes/recolor'
 
 beforeAll(() => {
@@ -47,6 +54,44 @@ describe('hex colors', () => {
 		expect(parseHex('#fff')).toEqual([255, 255, 255, 255])
 		expect(parseHex('102030')).toEqual([16, 32, 48, 255])
 		expect(toHex(16, 32, 48)).toBe('#102030ff')
+	})
+})
+
+describe('Palette panel colors', () => {
+	it('drops opaque alpha and keeps translucent alpha', () => {
+		expect(toPanelColor('#E0E0E0FF')).toBe('#e0e0e0')
+		expect(toPanelColor('#10203080')).toBe('#10203080')
+		expect(toPanelColor('#10203000')).toBe('#10203000')
+	})
+
+	it('reads any hex form back as #rrggbbaa', () => {
+		expect(fromPanelColor('#e0e0e0')).toBe('#e0e0e0ff')
+		expect(fromPanelColor('#FFF')).toBe('#ffffffff')
+		expect(fromPanelColor('#10203080')).toBe('#10203080')
+	})
+
+	it('round-trips strip colors', () => {
+		const colors = ['#e0e0e0ff', '#10203080', '#00000000']
+		expect(colors.map(toPanelColor).map(fromPanelColor)).toEqual(colors)
+	})
+
+	it("rejects colors that aren't hex", () => {
+		expect(fromPanelColor('red')).toBeUndefined()
+		expect(fromPanelColor('#12345')).toBeUndefined()
+		expect(fromPanelColor('rgb(1, 2, 3)')).toBeUndefined()
+	})
+})
+
+describe('suffixes', () => {
+	it('turns names and ids into valid suffixes', () => {
+		expect(toSuffix('Gold Trim.png')).toBe('gold_trim')
+		expect(toSuffix('minecraft:trims/color_palettes/gold')).toBe('gold')
+		expect(toSuffix('')).toBe('palette')
+	})
+
+	it('numbers taken suffixes', () => {
+		expect(uniqueSuffix('gold', [])).toBe('gold')
+		expect(uniqueSuffix('gold', ['gold', 'gold_2'])).toBe('gold_3')
 	})
 })
 

@@ -56,6 +56,49 @@ const READ_PIXELS = `async (texture) => {
 	return out
 }`
 
+/**
+ * Drag helpers for svelte-dnd-action, which drags on mouse events: `lift` presses `from` and moves
+ * just past `to`, `drop` lets go, and `drag` does both.
+ */
+const DRAG = `() => {
+	const wait = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
+	const center = element => {
+		const rect = element.getBoundingClientRect()
+		return [rect.left + rect.width / 2, rect.top + rect.height / 2]
+	}
+	const lift = async (from, to) => {
+		const [x0, y0] = center(from)
+		const [x1, y1] = center(to)
+		const dx = Math.sign(x1 - x0) * 6
+		const dy = Math.sign(y1 - y0) * 6
+		// Press whatever is under the cursor, as a user would, not the drag item itself.
+		document
+			.elementFromPoint(x0, y0)
+			.dispatchEvent(new MouseEvent('mousedown', { clientX: x0, clientY: y0, bubbles: true }))
+		for (let step = 1; step <= 20; step++) {
+			window.dispatchEvent(
+				new MouseEvent('mousemove', {
+					clientX: x0 + ((x1 + dx - x0) * step) / 20,
+					clientY: y0 + ((y1 + dy - y0) * step) / 20,
+					buttons: 1,
+				})
+			)
+			await wait(30)
+		}
+		// The library checks the dragged element's position on an interval.
+		await wait(400)
+	}
+	const drop = async () => {
+		window.dispatchEvent(new MouseEvent('mouseup'))
+		await wait(500)
+	}
+	const drag = async (from, to) => {
+		await lift(from, to)
+		await drop()
+	}
+	return { lift, drop, drag }
+}`
+
 describe('Permutation Sets', () => {
 	afterAll(() => fs.rmSync(WORK_DIR, { recursive: true, force: true }))
 
@@ -361,7 +404,13 @@ describe('Permutation Sets', () => {
 				set.select()
 				const root = document.querySelector('#animated_java\\:palette_set')!
 				const swatch = root.querySelector<HTMLElement>('.key-swatches .key-swatch')!
+				// In the dialog, left-click only starts drags; right-click edits.
 				swatch.click()
+				await new Promise(resolve => setTimeout(resolve, 50))
+				const leftClickOpens = !!document.querySelector('.swatch-popover')
+				swatch.dispatchEvent(
+					new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+				)
 				await new Promise(resolve => setTimeout(resolve, 50))
 				const action = [
 					...document.querySelectorAll<HTMLElement>('.swatch-popover button.action'),
@@ -370,18 +419,19 @@ describe('Permutation Sets', () => {
 				await new Promise(resolve => setTimeout(resolve, 50))
 				Dialog.open!.confirm()
 				return {
+					leftClickOpens,
 					key: set.palette_set.key.colors,
 					gold: set.palette_set.permutations[0].strip.colors,
 				}
 			},
 			{ setup: SETUP, formatId: BLUEPRINT_FORMAT_ID }
 		)
-		expect(result).toEqual({ key: ['#808080ff'], gold: ['#aa8800ff'] })
+		expect(result).toEqual({ leftClickOpens: false, key: ['#808080ff'], gold: ['#aa8800ff'] })
 	})
 
 	it('reorders key columns, a palette, permutations and bases by dragging', async () => {
 		const result = await blockbench.evaluate(
-			async (args: { setup: string; formatId: string }) => {
+			async (args: { setup: string; formatId: string; drag: string }) => {
 				const { palettes, set, base } = new Function(`return ${args.setup}`)()(
 					args.formatId
 				)
@@ -404,43 +454,7 @@ describe('Permutation Sets', () => {
 					...root.querySelectorAll<HTMLElement>(selector),
 				]
 				const paletteItems = () => items('.lineup-row:last-child .swatch-item')
-				const center = (element: HTMLElement) => {
-					const rect = element.getBoundingClientRect()
-					return [rect.left + rect.width / 2, rect.top + rect.height / 2]
-				}
-				/** svelte-dnd-action drags on mouse events: press `from`, then move just past `to`. */
-				const lift = async (from: HTMLElement, to: HTMLElement) => {
-					const [x0, y0] = center(from)
-					const [x1, y1] = center(to)
-					const dx = Math.sign(x1 - x0) * 6
-					const dy = Math.sign(y1 - y0) * 6
-					// Press whatever is under the cursor, as a user would, not the drag item itself.
-					document
-						.elementFromPoint(x0, y0)!
-						.dispatchEvent(
-							new MouseEvent('mousedown', { clientX: x0, clientY: y0, bubbles: true })
-						)
-					for (let step = 1; step <= 20; step++) {
-						window.dispatchEvent(
-							new MouseEvent('mousemove', {
-								clientX: x0 + ((x1 + dx - x0) * step) / 20,
-								clientY: y0 + ((y1 + dy - y0) * step) / 20,
-								buttons: 1,
-							})
-						)
-						await wait(30)
-					}
-					// The library checks the dragged element's position on an interval.
-					await wait(400)
-				}
-				const drop = async () => {
-					window.dispatchEvent(new MouseEvent('mouseup'))
-					await wait(500)
-				}
-				const drag = async (from: HTMLElement, to: HTMLElement) => {
-					await lift(from, to)
-					await drop()
-				}
+				const { lift, drop, drag } = new Function(`return ${args.drag}`)()()
 				const backgrounds = (elements: Element[]) =>
 					elements.map(element => (element as HTMLElement).style.background)
 
@@ -497,7 +511,7 @@ describe('Permutation Sets', () => {
 					),
 				}
 			},
-			{ setup: SETUP, formatId: BLUEPRINT_FORMAT_ID }
+			{ setup: SETUP, formatId: BLUEPRINT_FORMAT_ID, drag: DRAG }
 		)
 		expect(result).toEqual({
 			midDrag: {
@@ -525,9 +539,11 @@ describe('Permutation Sets', () => {
 				const { palettes, set } = new Function(`return ${args.setup}`)()(args.formatId)
 				const wait = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
 				const popover = () => document.querySelector<HTMLElement>('.swatch-popover')
-				/** Opens a swatch's popover, giving Spectrum a moment to finish setting up. */
+				/** Right-clicks a swatch's popover open, giving Spectrum a moment to set up. */
 				const open = async (swatch: HTMLElement) => {
-					swatch.click()
+					swatch.dispatchEvent(
+						new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+					)
 					await wait(300)
 				}
 				/** Types a hex value into the popover's picker, like a user would. */
@@ -711,7 +727,9 @@ describe('Permutation Sets', () => {
 			} finally {
 				Blockbench.showQuickMessage = showQuickMessage
 			}
-			root.querySelector<HTMLElement>('.palette-swatch')!.click()
+			root.querySelector<HTMLElement>('.palette-swatch')!.dispatchEvent(
+				new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+			)
 			await wait()
 			const popover = document.querySelector('.swatch-popover')
 			const note = popover?.querySelector('.note')?.textContent ?? ''
@@ -948,8 +966,21 @@ describe('Permutation Sets', () => {
 					await stroke()
 					const picked = ColorPanel.get()
 
-					const strip = document.querySelector('#panel_color .strip')!
-					strip.querySelector<HTMLElement>('.colorway')!.click()
+					const panel = document.getElementById('panel_animated_java:permutation-panel')!
+					/** The form row: the set's name, the select's text and its preview eye. */
+					const header = () => {
+						const select = panel.querySelector<HTMLElement>('.form .bb-select')!
+						return {
+							label: panel.querySelector('.form label')!.textContent,
+							value: [...select.childNodes]
+								.filter(node => node.nodeType === Node.TEXT_NODE)
+								.map(node => node.textContent)
+								.join(''),
+							eye: !!select.querySelector('.icon'),
+						}
+					}
+					const assignedHeader = header()
+					panel.querySelector<HTMLElement>('.form .bb-select')!.click()
 					await wait()
 					;[...document.querySelectorAll<HTMLElement>('.contextMenu li')]
 						.find(li => li.textContent!.trim().endsWith('red'))!
@@ -959,9 +990,10 @@ describe('Permutation Sets', () => {
 						.getGeneratedTextures(palettes.getPaletteSets()[0])
 						.find((t: any) => t.palette_generated.permutation === 'red')!
 					const showsRed = gold.getMaterial() === red.getOwnMaterial()
-					const swatches = [...strip.querySelectorAll<HTMLElement>('.swatch')].map(
-						s => s.title
-					)
+					const previewHeader = header()
+					const swatches = [
+						...panel.querySelectorAll<HTMLElement>('.palette-swatch'),
+					].map(s => s.style.background)
 					await stroke()
 					const pickedWhilePreviewing = ColorPanel.get()
 
@@ -974,6 +1006,8 @@ describe('Permutation Sets', () => {
 						messages,
 						picked,
 						showsRed,
+						assignedHeader,
+						previewHeader,
 						swatches,
 						pickedWhilePreviewing,
 						previewEnded,
@@ -992,9 +1026,126 @@ describe('Permutation Sets', () => {
 			messages: ["#3ad0ff isn't in this palette, so it won't recolor."],
 			picked: '#aa8800',
 			showsRed: true,
-			swatches: ['#ff0000ff', '#880000ff'],
+			assignedHeader: { label: 'armor_colors', value: 'As Assigned (gold)', eye: false },
+			previewHeader: { label: 'armor_colors', value: 'red', eye: true },
+			swatches: ['rgb(255, 0, 0)', 'rgb(136, 0, 0)'],
 			pickedWhilePreviewing: '#880000',
 			previewEnded: true,
+		})
+	})
+
+	it("edits the painted set's colors in the Permutation panel, one undo step per edit", async () => {
+		const result = await blockbench.evaluate(
+			async (args: { setup: string; formatId: string; drag: string }) => {
+				const { palettes, set, gold, cube } = new Function(`return ${args.setup}`)()(
+					args.formatId
+				)
+				const { drag } = new Function(`return ${args.drag}`)()()
+				const wait = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms))
+				await palettes.regenerateAllSets()
+				Modes.options.paint.select()
+				cube.select()
+				UVEditor.vue.updateTexture()
+				await wait(300)
+				const panel = document.getElementById('panel_animated_java:permutation-panel')!
+				const popover = () => document.querySelector<HTMLElement>('.swatch-popover')
+				const swatches = (kind: 'key' | 'palette') => [
+					...panel.querySelectorAll<HTMLElement>(`.${kind}-swatch`),
+				]
+				const open = async (swatch: HTMLElement) => {
+					swatch.dispatchEvent(
+						new MouseEvent('contextmenu', { bubbles: true, cancelable: true })
+					)
+					await wait(300)
+				}
+				const typeColor = async (color: string) => {
+					const input = popover()!.querySelector<HTMLInputElement>('.sp-input')!
+					input.value = color
+					jQuery(input).trigger('change')
+					await wait(100)
+				}
+				const action = (label: string) =>
+					[...popover()!.querySelectorAll<HTMLElement>('button.action')]
+						.find(button => button.textContent?.includes(label))!
+						.click()
+				const clickOutside = async () => {
+					document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+					await wait(100)
+				}
+				const goldColors = () => [...set.palette_set.permutations[0].strip.colors]
+				/** The second pixel of the gold recolor's canvas, which the model draws from. */
+				const shown = () =>
+					'#' +
+					[...gold.ctx.getImageData(1, 0, 1, 1).data]
+						.map((v: number) => v.toString(16).padStart(2, '0'))
+						.join('')
+				const steps = () => Undo.index
+
+				// Left-click picks the color as the brush color.
+				swatches('palette')[1].click()
+				const picked = ColorPanel.get()
+
+				// The popover edits live on the model, and closing it is one undo step.
+				const before = steps()
+				await open(swatches('palette')[1])
+				await typeColor('#123456ff')
+				await typeColor('#654321ff')
+				const live = { shown: shown(), saved: goldColors()[1], steps: steps() - before }
+				await clickOutside()
+				const committed = { gold: goldColors(), steps: steps() - before }
+				Undo.undo()
+				await wait(300)
+				const undone = {
+					gold: goldColors(),
+					swatch: swatches('palette')[1].style.background,
+				}
+
+				// Escape puts the color and the model back, without an undo step.
+				await open(swatches('palette')[1])
+				await typeColor('#123456ff')
+				window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+				await wait(300)
+				const escaped = { gold: goldColors(), shown: shown(), steps: steps() - before }
+
+				// The popover sets the swatch to the brush color, or the brush color to the swatch.
+				ColorPanel.set('#00ff00')
+				await open(swatches('palette')[0])
+				action('Set to brush color')
+				await wait()
+				await clickOutside()
+				const fromBrush = goldColors()[0]
+				await open(swatches('key')[0])
+				action('Use as brush color')
+				await clickOutside()
+				const toBrush = ColorPanel.get()
+
+				// Reordering the palette is one undo step too.
+				const beforeDrag = steps()
+				await drag(swatches('palette')[0], swatches('palette')[1])
+				const dragged = { gold: goldColors(), steps: steps() - beforeDrag }
+				Modes.options.edit.select()
+				return {
+					picked,
+					live,
+					committed,
+					undone,
+					escaped,
+					fromBrush,
+					toBrush,
+					dragged,
+				}
+			},
+			{ setup: SETUP, formatId: BLUEPRINT_FORMAT_ID, drag: DRAG }
+		)
+		expect(result).toEqual({
+			picked: '#aa8800',
+			live: { shown: '#654321ff', saved: '#aa8800ff', steps: 0 },
+			committed: { gold: ['#ffff00ff', '#654321ff'], steps: 1 },
+			undone: { gold: ['#ffff00ff', '#aa8800ff'], swatch: 'rgb(170, 136, 0)' },
+			escaped: { gold: ['#ffff00ff', '#aa8800ff'], shown: '#aa8800ff', steps: 0 },
+			fromBrush: '#00ff00ff',
+			toBrush: '#e0e0e0',
+			dragged: { gold: ['#aa8800ff', '#00ff00ff'], steps: 1 },
 		})
 	})
 
@@ -1026,6 +1177,80 @@ describe('Permutation Sets', () => {
 		)
 		expect(result.unchanged).toEqual([])
 		expect(result.changed).toEqual(['armor_red'])
+	})
+
+	it("loads a set's colors into Blockbench's palette and saves the palette back as one undo step", async () => {
+		const result = await blockbench.evaluate(
+			async (args: { setup: string; readPixels: string; formatId: string }) => {
+				const { palettes, set } = new Function(`return ${args.setup}`)()(args.formatId)
+				const readPixels = new Function(`return ${args.readPixels}`)()
+				const palette = (ColorPanel as any).palette as string[]
+				const original = palette.slice()
+				const suffixes = () => set.palette_set.permutations.map((p: any) => p.suffix)
+				try {
+					const toolbar = (Toolbars as any).palette.children.map((item: any) => item.id)
+
+					const loaded = await palettes.loadStripIntoPalette(set, set.palette_set.key)
+					const keyColors = palette.slice()
+					await palettes.loadStripIntoPalette(set, set.palette_set.permutations[0].strip)
+					const goldColors = palette.slice()
+
+					palette.splice(0, Infinity, '#123456', '#654321')
+					const added = await palettes.savePaletteToSet(set, undefined, 'Gold Trim')
+					const afterAdd = suffixes()
+					const addedRecolor = palettes
+						.getGeneratedTextures(set)
+						.find((t: Texture) => t.name === 'armor_gold_trim')
+					const addedPixels = addedRecolor && (await readPixels(addedRecolor))
+					const overwritten = await palettes.savePaletteToSet(set, 'red')
+					const redColors = set.palette_set.permutations[1].strip.colors
+					Undo.undo()
+					const redAfterUndo = set.palette_set.permutations[1].strip.colors
+
+					palette.splice(0, Infinity, '#123456')
+					const tooShort = await palettes.savePaletteToSet(set, 'red')
+					palette.splice(0, Infinity, 'red', '#000000')
+					const notHex = await palettes.savePaletteToSet(set, 'red')
+					return {
+						toolbar,
+						loaded,
+						keyColors,
+						goldColors,
+						added,
+						afterAdd,
+						addedPixels,
+						overwritten,
+						redColors,
+						redAfterUndo,
+						tooShort,
+						notHex,
+						afterErrors: suffixes(),
+					}
+				} finally {
+					palette.splice(0, Infinity, ...original)
+				}
+			},
+			{ setup: SETUP, readPixels: READ_PIXELS, formatId: BLUEPRINT_FORMAT_ID }
+		)
+
+		expect(result.toolbar).toEqual(
+			expect.arrayContaining([
+				'animated_java:action/load-permutation-palette',
+				'animated_java:action/save-permutation-palette',
+			])
+		)
+		expect(result.loaded).toBe(true)
+		expect(result.keyColors).toEqual(['#e0e0e0', '#808080'])
+		expect(result.goldColors).toEqual(['#ffff00', '#aa8800'])
+		expect(result.added).toBeUndefined()
+		expect(result.afterAdd).toEqual(['gold', 'red', 'gold_trim'])
+		expect(result.addedPixels).toEqual(['#123456ff', '#654321ff'])
+		expect(result.overwritten).toBeUndefined()
+		expect(result.redColors).toEqual(['#123456ff', '#654321ff'])
+		expect(result.redAfterUndo).toEqual(['#ff0000ff', '#880000ff'])
+		expect(result.tooShort).toContain("has 1 colors, but the set's key has 2")
+		expect(result.notHex).toContain("isn't a hex color")
+		expect(result.afterErrors).toEqual(['gold', 'red', 'gold_trim'])
 	})
 
 	it("previews a picked atlas file's images after its pack moves", async () => {

@@ -1,16 +1,14 @@
 /**
  * Paint mode for Permutation Sets: painting a recolor paints its base in key colors, the color
- * picker reads what's shown, recolors update during a stroke, and the Color panel gets a strip of
- * the set's colors with a colorway preview.
+ * picker reads what's shown, recolors update during a stroke, and a colorway can be previewed on
+ * the model. The Permutation panel edits the painted set's colors.
  */
 import {
 	registerPatch,
 	registerProjectPatch,
 	registerPropertyOverridePatch,
 } from 'blockbench-patch-manager'
-import { mount, unmount } from 'svelte'
 import { isEnabled, isEnabledFor, translate } from './host'
-import PaintStrip from './paintStrip.svelte'
 import {
 	clearColorwayPreviews,
 	followTexture,
@@ -233,22 +231,6 @@ registerPatch({
 
 	revert: ({ vue, original }) => {
 		vue.updateTexture = original
-	},
-})
-
-registerPatch({
-	id: 'animated_java:palettes/paint-strip',
-
-	apply: () => {
-		const target = document.createElement('div')
-		document.getElementById('color_panel_wrapper')?.before(target)
-		const component = mount(PaintStrip, { target })
-		return { target, component }
-	},
-
-	revert: ({ target, component }) => {
-		void unmount(component)
-		target.remove()
 	},
 })
 

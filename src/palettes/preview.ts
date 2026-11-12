@@ -250,34 +250,52 @@ async function regenerateSet(set: PaletteSet) {
 }
 
 /**
+ * Draws a project set's recolors onto their canvases from `data` and its bases' canvases, without
+ * changing their images, so unsaved edits show on the model. Only `base`'s recolors, if given.
+ */
+export async function drawRecolorCanvases(
+	set: PaletteSet,
+	data: IPaletteSetData = set.palette_set,
+	base?: Texture
+) {
+	if (data.reference) return
+	const key = await getStripColors(data, data.key)
+	if (!key) return
+	const read = new Map<Texture, IPixels>()
+	for (const texture of getGeneratedTextures(set)) {
+		const { base: baseUuid, permutation: permutationUuid } = texture.palette_generated
+		if (base && baseUuid !== base.uuid) continue
+		const source = base ?? Texture.all.find(t => t.uuid === baseUuid)
+		const { width, height } = source?.canvas ?? {}
+		if (!source || !width || !height) continue
+		if (texture.canvas.width !== width || texture.canvas.height !== height) continue
+		const permutation = data.permutations.find(p => p.uuid === permutationUuid)
+		const palette = permutation && (await getStripColors(data, permutation.strip))
+		if (!palette) continue
+		let pixels = read.get(source)
+		if (!pixels) {
+			pixels = { width, height, data: source.ctx.getImageData(0, 0, width, height).data }
+			read.set(source, pixels)
+		}
+		const recolored = renderRecolor(pixels, key, palette)
+		const image = new ImageData(new Uint8ClampedArray(recolored.data), width, height)
+		texture.ctx.putImageData(image, 0, 0)
+		// Blockbench's texture materials draw from the texture's canvas through `map`.
+		const material = texture.getOwnMaterial() as THREE.ShaderMaterial & {
+			map: THREE.Texture
+		}
+		material.map.needsUpdate = true
+	}
+}
+
+/**
  * Redraws `base`'s recolors from its canvas, which painting changes before its image, so a stroke
  * shows on the recolors while it's being painted. The usual redraw still runs once it ends.
  */
 export async function redrawRecolorsOf(base: Texture) {
-	const { width, height } = base.canvas
-	if (!width || !height) return
-	const pixels = { width, height, data: base.ctx.getImageData(0, 0, width, height).data }
 	for (const set of getPaletteSets()) {
-		const data = set.palette_set
-		if (data.reference || !data.bases.includes(base.uuid)) continue
-		const key = await getStripColors(data, data.key)
-		if (!key) continue
-		for (const texture of getGeneratedTextures(set)) {
-			if (texture.palette_generated.base !== base.uuid) continue
-			if (texture.canvas.width !== width || texture.canvas.height !== height) continue
-			const permutation = data.permutations.find(
-				p => p.uuid === texture.palette_generated.permutation
-			)
-			const palette = permutation && (await getStripColors(data, permutation.strip))
-			if (!palette) continue
-			const recolored = renderRecolor(pixels, key, palette)
-			const image = new ImageData(new Uint8ClampedArray(recolored.data), width, height)
-			texture.ctx.putImageData(image, 0, 0)
-			// Blockbench's texture materials draw from the texture's canvas through `map`.
-			const material = texture.getOwnMaterial() as THREE.ShaderMaterial & {
-				map: THREE.Texture
-			}
-			material.map.needsUpdate = true
+		if (set.palette_set.bases.includes(base.uuid)) {
+			await drawRecolorCanvases(set, set.palette_set, base)
 		}
 	}
 }

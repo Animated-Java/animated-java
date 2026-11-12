@@ -182,7 +182,11 @@ describe('stringifyBlock', () => {
 
 	it('stringifies boolean and number values', () => {
 		expect(
-			stringifyBlock('minecraft:note_block', { note: 5, powered: true }, { note: 0, powered: false })
+			stringifyBlock(
+				'minecraft:note_block',
+				{ note: 5, powered: true },
+				{ note: 0, powered: false }
+			)
 		).toBe('minecraft:note_block[note=5,powered=true]')
 	})
 })

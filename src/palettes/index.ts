@@ -7,10 +7,13 @@
  */
 import './mods'
 import './paint'
+import './palettePanel'
+import './permutationPanel/permutationPanel'
 
 export { buildAtlasSource, getPaletteId, getSpriteId, supportsSeparator } from './atlas'
 export { checkPaletteSet, type IPaletteIssue } from './checks'
 export { findPaletteExportErrors } from './exportChecks'
+export { loadStripIntoPalette, savePaletteToSet } from './palettePanel'
 export {
 	clearPalettePreviewCache,
 	encodeColorsAsPng,

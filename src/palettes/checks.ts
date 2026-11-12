@@ -24,6 +24,24 @@ export interface IPaletteCheckInput {
 const SUFFIX_PATTERN = /^[a-z0-9_.-]+$/
 const SEPARATOR_PATTERN = /^[a-z0-9_.\-/]*$/
 
+/** Turns a file name or resource id into a valid suffix, like `Gold Trim.png` -> `gold_trim`. */
+export function toSuffix(name: string): string {
+	const suffix = name
+		.replace(/\.png$/i, '')
+		.replace(/^.*[:/]/, '')
+		.toLowerCase()
+		.replace(/[^a-z0-9_.-]/g, '_')
+	return suffix || 'palette'
+}
+
+/** `suffix`, numbered like `gold_2` if it's already in `taken`. */
+export function uniqueSuffix(suffix: string, taken: Iterable<string>): string {
+	const used = new Set(taken)
+	let candidate = suffix
+	for (let i = 2; used.has(candidate); i++) candidate = `${suffix}_${i}`
+	return candidate
+}
+
 const issue = (severity: PaletteIssueSeverity, code: string, ...args: string[]): IPaletteIssue => ({
 	severity,
 	code,
