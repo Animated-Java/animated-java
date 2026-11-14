@@ -1,4 +1,5 @@
 import { registerProjectPatch, registerPropertyOverridePatch } from 'blockbench-patch-manager'
+import { getFsModule } from '../constants'
 import { activeProjectIsBlueprintFormat, BLUEPRINT_FORMAT_ID } from '../formats/blueprint'
 import { isParsingBlueprint } from '../formats/blueprint/codec'
 import { getBaseLabel, getGeneratedSource, isGeneratedTexture } from '../palettes/sets'
@@ -6,9 +7,13 @@ import { localize } from '../util/lang'
 import { isTextureSlot } from '../textureSlots'
 import { isResourcePackPath } from '../util/minecraftUtil'
 
-/** A texture that Animated Java does not write to a file of its own on export. */
-function isManagedByBlueprint(texture: Texture): boolean {
-	return !!texture.internal || (!!texture.path && isResourcePackPath(texture.path))
+/**
+ * Whether a texture lives only inside the Blueprint. Blockbench also flags a file texture `internal`
+ * once it's edited (keeping its `path`), until `save()` writes it back to that file.
+ */
+function isEmbedded(texture: Texture): boolean {
+	if (!texture.internal) return false
+	return !(isApp && texture.path && getFsModule().existsSync(texture.path))
 }
 
 /**
@@ -19,6 +24,29 @@ function setText(element: HTMLElement, text: string) {
 	if (element.textContent !== text) element.textContent = text
 }
 
+/** Restores Blockbench's own saved/unsaved state on a texture's save icon. */
+function restoreSaveIcon(saveIcon: HTMLElement, texture: Texture) {
+	setText(saveIcon, texture.saved ? 'check_circle' : 'save')
+	saveIcon.setAttribute('title', '')
+	saveIcon.classList.toggle('clickable', !texture.saved)
+}
+
+/** Shows or removes the link icon placed beside a resource pack texture's save icon. */
+function setLinkIcon(saveIcon: HTMLElement, show: boolean) {
+	let linkIcon = saveIcon.previousElementSibling
+	if (!linkIcon?.classList.contains('aj_texture_link_icon')) linkIcon = null
+	if (!show) {
+		linkIcon?.remove()
+		return
+	}
+	if (linkIcon) return
+	linkIcon = document.createElement('i')
+	linkIcon.className = 'material-icons aj_texture_link_icon'
+	linkIcon.textContent = 'link'
+	linkIcon.setAttribute('title', localize('panel.textures.linked_icon'))
+	saveIcon.before(linkIcon)
+}
+
 export function updateTextureIcon(texture: Texture) {
 	const saveIcon = document.querySelector<HTMLElement>(
 		`li[texid="${texture.uuid}"] .texture_save_icon`
@@ -27,6 +55,8 @@ export function updateTextureIcon(texture: Texture) {
 
 	const description = saveIcon.closest('li.texture')?.querySelector<HTMLElement>('.texture_res')
 	const generated = getGeneratedSource(texture)
+	const linked = !!texture.path && isResourcePackPath(texture.path)
+	setLinkIcon(saveIcon, linked && !isGeneratedTexture(texture) && !isTextureSlot(texture))
 
 	if (isGeneratedTexture(texture)) {
 		setText(saveIcon, 'colorize')
@@ -54,35 +84,30 @@ export function updateTextureIcon(texture: Texture) {
 				localize('panel.textures.slot_description', String(texture.slot_textures.length))
 			)
 		}
-	} else if (texture.path && isResourcePackPath(texture.path)) {
-		// Referenced from a resource pack by resource location.
-		setText(saveIcon, 'link')
-		saveIcon.setAttribute('title', localize('panel.textures.linked_icon'))
-		saveIcon.classList.remove('clickable')
-	} else if (texture.internal) {
+	} else if (linked) {
+		// Referenced from a resource pack, but still a file on disk that edits save to.
+		restoreSaveIcon(saveIcon, texture)
+	} else if (isEmbedded(texture)) {
 		// Embedded in the Blueprint - there is nothing to save to disk.
 		setText(saveIcon, 'box')
 		saveIcon.setAttribute('title', localize('panel.textures.internal_icon'))
 		saveIcon.classList.remove('clickable')
 	} else {
-		// A file on disk - restore Blockbench's own save state.
-		setText(saveIcon, texture.saved ? 'check_circle' : 'save')
-		saveIcon.setAttribute('title', '')
-		saveIcon.classList.toggle('clickable', !texture.saved)
+		restoreSaveIcon(saveIcon, texture)
 	}
 }
 
 // The status icon is informational, but its element still carries Blockbench's
 // `@click="texture.save()"` handler. Rather than block pointer events (which also
-// kills the tooltip), make `save()` a no-op for textures the Blueprint manages.
+// kills the tooltip), make `save()` a no-op for textures embedded in the Blueprint.
 registerPropertyOverridePatch({
-	id: `animated_java:texture/skip-save-for-managed-textures`,
+	id: `animated_java:texture/skip-save-for-embedded-textures`,
 	target: Texture.prototype,
 	key: 'save',
 	condition: () => activeProjectIsBlueprintFormat(),
 	get: original => {
 		return function (this: Texture, as?: any) {
-			if (!as && isManagedByBlueprint(this)) return this
+			if (!as && isEmbedded(this)) return this
 			return original.call(this, as)
 		}
 	},
