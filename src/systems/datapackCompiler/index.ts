@@ -200,14 +200,25 @@ async function generateRootEntityPassengers(version: string, rig: IRenderedRig) 
 					states.set(k, new NbtString(v.toString()))
 				}
 
-				passenger
-					.set('id', new NbtString('minecraft:block_display'))
-					.set(
-						'block_state',
-						new NbtCompound()
-							.set('Name', new NbtString(parsed.resource.name))
-							.set('Properties', states)
-					)
+				if (VersionUtil.compare(version, '>=', '26.3')) {
+					passenger
+						.set('id', new NbtString('minecraft:block_display'))
+						.set(
+							'block_state',
+							new NbtCompound()
+								.set('id', new NbtString(parsed.resource.name))
+								.set('properties', states)
+						)
+				} else {
+					passenger
+						.set('id', new NbtString('minecraft:block_display'))
+						.set(
+							'block_state',
+							new NbtCompound()
+								.set('Name', new NbtString(parsed.resource.name))
+								.set('Properties', states)
+						)
+				}
 
 				if (node.configs?.default) {
 					DisplayEntityConfig.fromJSON(node.configs.default).toNBT(passenger)
