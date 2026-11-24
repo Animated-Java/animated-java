@@ -284,4 +284,65 @@ describe('animationRenderer.renderProjectAnimations', () => {
 		expect(result.maxError).toBeLessThan(1e-4)
 		expect(result.restError).toBeLessThan(1e-4)
 	})
+
+	// A global-rotation animator cancels its parent's world rotation, and the export poses the
+	// scene at 180°. The exported pose still has to match the preview's.
+	it("exports global rotation as Blockbench's preview poses it", async () => {
+		const result = await blockbench.evaluate(async (formatId: string) => {
+			const aj = (window as any).AnimatedJava
+			const g = globalThis as any
+			g.newProject(g.Formats[formatId])
+
+			const body = new Group({ name: 'body', origin: [0, 8, 0], rotation: [0, 45, 0] }).init()
+			const arm = new Group({ name: 'arm', origin: [0, 16, 0] }).addTo(body).init()
+
+			const animation = new Blockbench.Animation({ name: 'spin' })
+			animation.add()
+			animation.loop = 'loop'
+			animation.length = 1
+			const animator = animation.getBoneAnimator(arm)
+			animator.rotation_global = true
+			animator.addKeyframe({
+				channel: 'rotation',
+				time: 0,
+				data_points: [{ x: 0, y: 0, z: 0 }],
+			})
+			animator.addKeyframe({
+				channel: 'rotation',
+				time: 1,
+				data_points: [{ x: 30, y: 0, z: 120 }],
+			})
+
+			const rig = aj.renderRig(
+				'assets/aj/models/blueprint/x',
+				'assets/aj/textures/blueprint/x'
+			)
+			const [rendered] = await aj.renderProjectAnimations(Project, rig)
+
+			const exportedRotation = (uuid: string, tick: number) => {
+				const frame = rendered.frames
+					.slice(0, tick + 1)
+					.findLast((f: any) => f.node_transforms[uuid])
+				const matrix = new THREE.Matrix4().fromArray(frame.node_transforms[uuid].matrix)
+				const rotation = new THREE.Quaternion()
+				matrix.decompose(new THREE.Vector3(), rotation, new THREE.Vector3())
+				return rotation
+			}
+
+			const errors: number[] = []
+			animation.select()
+			for (const tick of [0, 5, 10, 20]) {
+				Timeline.setTime(tick / 20)
+				Animator.preview()
+				// Rotation relative to the parent; immune to the export's scene correction.
+				const exportedLocal = exportedRotation(body.uuid, tick)
+					.invert()
+					.multiply(exportedRotation(arm.uuid, tick))
+				errors.push(exportedLocal.angleTo(arm.mesh.quaternion))
+			}
+			return { maxError: Math.max(...errors) }
+		}, BLUEPRINT_FORMAT_ID)
+
+		expect(result.maxError).toBeLessThan(1e-4)
+	})
 })

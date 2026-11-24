@@ -96,6 +96,29 @@ function displayIK(animation: _Animation, ikNulls: NullObject[]) {
 	Project!.model_3d.updateWorldMatrix(true, true)
 }
 
+/**
+ * Poses a node's animator for the current time.
+ *
+ * A global-rotation animator cancels its parent's world rotation, which includes the scene's
+ * 180° from {@link correctSceneAngle} and would drop it from the exported pose. Pose it with the
+ * scene at its usual angle, then refresh the ancestors' world matrices that posing computed
+ * without the scene's rotation.
+ */
+function displayAnimatorFrame(node: OutlinerNode, animator: BoneAnimator) {
+	if (!animator.rotation_global) {
+		animator.displayFrame()
+		return
+	}
+	SCENE_ROTATION_SCRATCH.copy(Canvas.scene.quaternion)
+	Canvas.scene.quaternion.identity()
+	try {
+		animator.displayFrame()
+	} finally {
+		Canvas.scene.quaternion.copy(SCENE_ROTATION_SCRATCH)
+		node.mesh.parent?.updateWorldMatrix(true, false)
+	}
+}
+
 export function correctSceneAngle() {
 	getMainPreview()?.controls.rotateLeft(Math.PI)
 	Canvas.scene.setRotationFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
@@ -640,7 +663,7 @@ export function updatePreview(
 	for (const node of nodes) {
 		if (!(node.constructor as any).animator) continue
 		Animator.resetLastValues()
-		animation.getBoneAnimator(node)!.displayFrame()
+		displayAnimatorFrame(node, animation.getBoneAnimator(node) as unknown as BoneAnimator)
 	}
 	Animator.resetLastValues()
 	// Only the rig's own subtree feeds `getNodeMatrix`; skip the grid, lights,
@@ -688,9 +711,9 @@ export function updatePreviewFast(
 	Timeline.time = time
 	for (const node of ikDrivenNodes) resetNodePose(node)
 	for (const { node } of poseTargets) resetNodePose(node)
-	for (const { animator } of poseTargets) {
+	for (const { node, animator } of poseTargets) {
 		Animator.resetLastValues()
-		animator.displayFrame()
+		displayAnimatorFrame(node, animator)
 	}
 	Animator.resetLastValues()
 	// Only the posed nodes' local matrices actually changed. Refresh those, then
